@@ -14,11 +14,32 @@
             />
         </ui-input-group>
         <div
-            v-if="embedHtml"
-            v-html="embedHtml"
+            v-if="info.html"
+            v-html="info.html"
             class="relative aspect-(--embed-ratio) overflow-hidden rounded-lg [&_iframe]:w-full [&_iframe]:h-full [&_iframe]:border-0"
             :style="`--embed-ratio: ${embedRatio}`"
         ></div>
+        <article
+            v-else-if="info.title"
+            class="overflow-hidden bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg"
+        >
+            <img
+                v-if="info.image"
+                :src="info.image"
+                class="w-full h-auto"
+            />
+            <div class="px-3 py-2.5 grid gap-0.5 text-sm">
+                <p class="line-clamp-1 font-semibold text-gray-800 dark:text-gray-200">
+                    <a :href="info.url">{{ info.title }}</a>
+                </p>
+                <p v-if="info.description" class="line-clamp-1 text-gray-500 dark:text-gray-400">
+                    {{ info.description }}
+                </p>
+                <p v-if="info.provider_url" class="text-gray-400 dark:text-gray-600">
+                    {{ formatHostname(info.provider_url) }}
+                </p>
+            </div>
+        </article>
     </div>
 </template>
 
@@ -38,12 +59,15 @@ export default {
             return this.embedInfo[this.value] || {};
         },
         embedHtml() {
-            return this.info?.html;
+            return this.info.html;
         },
         embedRatio() {
-            const width = this.info?.width || 16;
-            const height = this.info?.height || 9;
-            return width / height;
+            const width = this.info.width;
+            const height = this.info.height;
+
+            return (width && height)
+                ? (width / height)
+                : (16 / 9);
         },
         loadEmbedInfoDebounced() {
             return debounce(this.loadEmbedInfo, 300);
@@ -67,6 +91,15 @@ export default {
                 return ['http:', 'https:'].includes(protocol);
             } catch (_) {
                 return false;
+            }
+        },
+        formatHostname(url) {
+            try {
+                const { hostname } = new URL(url);
+                return hostname.replace(/^www\d?\./, '');
+            } catch (error) {
+                console.error(error);
+                return url;
             }
         },
     },
