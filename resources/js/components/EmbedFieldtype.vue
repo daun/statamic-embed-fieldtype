@@ -28,7 +28,7 @@
                 :src="info.thumbnail.url"
                 class="w-full h-auto"
             />
-            <div v-if="info.title" class="px-3 py-2.5 grid gap-0.5 text-sm">
+            <div v-if="info.title" class="px-4 py-3 grid gap-0.5 text-sm">
                 <p class="line-clamp-1 font-semibold text-gray-800 dark:text-gray-200">
                     <a :href="info.url">{{ info.title }}</a>
                 </p>
