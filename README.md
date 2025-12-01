@@ -2,7 +2,10 @@
 
 Fieldtype for embedding and previewing external content.
 
-![Example embed field](art/embed-field.png)
+Fetches oEmbed data and
+shows rich previews in the control panel.
+
+![Example embed field](art/field-soundcloud.png)
 
 ## Installation
 
@@ -14,7 +17,7 @@ composer require daun/statamic-embed-fieldtype
 
 ## Fieldtype
 
-The addon ships with a fieldtype that accepts a url and shows a preview in the editor.
+The addon ships with an `embed` fieldtype that accepts a url and shows a preview in the editor.
 
 ```yaml
 fields:
