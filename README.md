@@ -58,6 +58,7 @@ The fieldtype augments the url to an array of embed data that can be used in tem
         {{ /if }}
         {{ if embed:provider:url }}
           <p class="text-gray-500">{{ embed:provider:url | replace('https://', '') }}</p>
+        {{ /if }}
       </div>
     {{ /if }}
   </article>
