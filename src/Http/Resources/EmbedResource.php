@@ -9,6 +9,13 @@ use Illuminate\Support\Str;
 class EmbedResource extends JsonResource
 {
     /**
+     * The resource instance.
+     *
+     * @var Extractor
+     */
+    public $resource;
+
+    /**
      * Transform the resource into an array.
      *
      * @param \Illuminate\Http\Request $request
