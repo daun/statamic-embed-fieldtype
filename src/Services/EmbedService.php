@@ -20,15 +20,18 @@ class EmbedService
             return null;
         }
 
-        $key = "daun-statamic-embed-info-".md5($url);
+        $key = "daun-statamic-embed-data-".md5($url);
 
         if (Cache::has($key)) {
-            return Cache::get($key);
+            $data = Cache::get($key);
+        } else if ($load) {
+            $data = $this->data($url);
+            Cache::set($key, $data, now()->addDays(7));
+        } else {
+            $data = null;
         }
 
-        return $load
-            ? Cache::remember($key, now()->addDays(7), fn() => $this->data($url))
-            : null;
+        return $data;
     }
 
     protected function data(string $url): array
