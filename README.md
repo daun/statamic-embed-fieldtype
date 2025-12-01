@@ -61,9 +61,11 @@ The fieldtype augments the url to an array of embed data that can be used in tem
 {{ /if }}
 ```
 
-If you want to use the raw url without augmentation, you can access it via `embed:url`.
+### Unaugmented URL
 
-To turn off augmentation completely, you can set the field config `augment_to_embed_data` to `false`. This will return the url as-is.
+If you want to use the raw url without augmentation, you can access it via `embed:url`. To turn off
+augmentation completely, you can set the field config `augment_to_embed_data` to `false`. This will
+return the url as-is in all frontend contexts.
 
 ```diff
 fields:
