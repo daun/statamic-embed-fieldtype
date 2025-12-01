@@ -27,66 +27,84 @@ class EmbedResource extends JsonResource
             'title' => $this->resource->title ?? null,
             'description' => $this->resource->description ?? null,
             'language' => $this->resource->language ?? null,
+            ...$this->composeEmbed(),
+            ...$this->composeThumbnail(),
             ...$this->composeProvider(),
             ...$this->composeAuthor(),
-            ...$this->composeDimensions(),
-            ...$this->composePreview(),
-            ...$this->composeEmbed(),
         ];
     }
 
-    protected function composeProvider(): ?array
+    protected function composeProvider(): array
     {
         $name = $this->resource->providerName ?? null;
         $url = $this->resource->providerUrl ?? null;
 
         return [
-            'provider' => $name ? Str::slug($name) : $name,
-            'provider_name' => $name,
-            'provider_url' => $url,
+            'provider' => [
+                'slug' => $name ? Str::slug($name) : $name,
+                'name' => $name,
+                'url' => $url,
+            ],
         ];
     }
 
-    protected function composeAuthor(): ?array
+    protected function composeAuthor(): array
     {
+        $name = $this->resource->authorName ?? null;
+        $url = $this->resource->authorUrl ?? null;
+
         return [
-            'author_name' => $this->resource->authorName ?? null,
-            'author_url' => $this->resource->authorUrl ?? null,
+            'author' => $name ? [
+                'name' => $name,
+                'url' => $url,
+            ] : null,
         ];
     }
 
-    protected function composeDimensions(): ?array
+    protected function composeEmbed(): array
     {
-        $width = $this->resource->code?->width;
-        $height = $this->resource->code?->height;
+        $oembed = $this->resource->getOEmbed()->all();
+
+        $type = $oembed['type'] ?? null;
+        $html = $this->resource->code?->html ?? null;
+        $width = $this->resource->code?->width ?? null;
+        $height = $this->resource->code?->height ?? null;
         $ratio = $width && $height ? $width / $height : 0;
         $orientation = $ratio ? ($ratio >= 1 ? 'landscape' : 'portrait') : null;
 
         return [
-            'width' => $width,
-            'height' => $height,
-            'ratio' => $ratio,
-            'orientation' => $orientation,
+            'embed' => $html ? [
+                'type' => $type,
+                'html' => $html,
+                'width' => $width,
+                'height' => $height,
+                'ratio' => $ratio,
+                'orientation' => $orientation,
+            ] : null,
         ];
     }
 
-    protected function composePreview(): ?array
+    protected function composeThumbnail(): array
     {
+        $oembed = $this->resource->getOEmbed()->all();
+
         $image = $this->resource->image
             ? ((string) $this->resource->image)
-            : null;
+            : ($oembed['thumbnail_url'] ?? null);
+
+        $width = $oembed['thumbnail_width'] ?? null;
+        $height = $oembed['thumbnail_height'] ?? null;
+        $ratio = $width && $height ? $width / $height : 0;
+        $orientation = $ratio ? ($ratio >= 1 ? 'landscape' : 'portrait') : null;
 
         return [
-            'image' => $image,
-        ];
-    }
-
-    protected function composeEmbed(): ?array
-    {
-        $html = $this->resource->code?->html ?? null;
-
-        return [
-            'html' => $html,
+            'thumbnail' => $image ? [
+                'url' => $image,
+                'width' => $width,
+                'height' => $height,
+                'ratio' => $ratio,
+                'orientation' => $orientation,
+            ] : null,
         ];
     }
 }
