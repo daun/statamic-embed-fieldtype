@@ -72,9 +72,6 @@ class EmbedResource extends JsonResource
         $width = $this->resource->code?->width ?? null;
         $height = $this->resource->code?->height ?? null;
 
-        ray($this->resource->code);
-        ray($oembed);
-
         $iframeWidth = preg_match('/width=["\']?(\d+)["\']?/i', $html, $matches) ? (int) $matches[1] : null;
         $iframeHeight = preg_match('/height=["\']?(\d+)["\']?/i', $html, $matches) ? (int) $matches[1] : null;
         $maxWidth = preg_match('/style=["\'][^"\']*\bmax-width:\s*(\d+)px\b[^"\']*["\']/i', $html, $matches) ? (int) $matches[1] : null;
