@@ -5,7 +5,7 @@ Fieldtype for embedding and previewing external content.
 Fetches oEmbed data and
 shows rich previews in the control panel.
 
-![Example embed field](art/field-soundcloud.png)
+<img src="art/field-podcast.png" alt="Example embed field" width="650">
 
 ## Installation
 
