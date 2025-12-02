@@ -21,7 +21,7 @@ class EmbedService
             return null;
         }
 
-        $key = "statamic-embed-data-".md5($url);
+        $key = 'statamic-embed-data-'.md5($url);
 
         if (! $refresh && Cache::has($key)) {
             return Cache::get($key);
