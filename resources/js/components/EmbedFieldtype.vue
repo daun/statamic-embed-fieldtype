@@ -14,18 +14,31 @@
             />
         </ui-input-group>
         <article
-            v-if="info.title || info.embed || info.thumbnail"
+            v-if="info.title || info.code || info.image"
             class="overflow-hidden bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg"
         >
             <div
-                v-if="info.embed"
-                v-html="info.embed.html"
-                class="relative aspect-(--embed-ratio) overflow-hidden [&_iframe]:w-full [&_iframe]:h-full [&_iframe]:border-0"
-                :style="`--embed-ratio: ${info.embed.ratio}`"
-            ></div>
+                v-if="info.code"
+                :class="{ 'p-2 pb-0': info.code.borderRadius }"
+            >
+                <div
+                    v-html="info.code.html"
+                    class="relative overflow-hidden [&_iframe]:w-full! [&_iframe]:max-w-none! [&_iframe]:h-full! [&_iframe]:border-0"
+                    :class="{
+                        'aspect-(--embed-ratio)': info.code.ratio,
+                        'h-(--embed-height)': info.code.height && !info.code.ratio,
+                    }"
+                    :style="{
+                        '--embed-ratio': info.code.ratio,
+                        '--embed-width': `${info.code.width ?? 0}px`,
+                        '--embed-height': `${info.code.height ?? 0}px`,
+                    }"
+                ></div>
+            </div>
+
             <img
-                v-else-if="info.thumbnail"
-                :src="info.thumbnail.url"
+                v-else-if="info.image"
+                :src="info.image.url"
                 class="w-full h-auto"
             />
             <div v-if="info.title" class="px-4 py-3 grid gap-0.5 text-sm">

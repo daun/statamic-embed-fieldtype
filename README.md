@@ -35,16 +35,16 @@ The fieldtype augments the url to an array of embed data that can be used in tem
 ```html
 {{ if embed:url }}
   <article class="border rounded-lg overflow-hidden">
-    {{ if embed:embed }}
+    {{ if embed:code }}
       <div
         class="relative aspect-(--embed-ratio) overflow-hidden [&_iframe]:w-full [&_iframe]:h-full [&_iframe]:border-0"
-        style="--embed-ratio: {{ embed:embed:ratio }}"
+        style="--embed-ratio: {{ embed:code:ratio }}"
       >
-        {{ embed:embed:html }}
+        {{ embed:code:html }}
       </div>
-    {{ elseif embed:thumbnail }}
+    {{ elseif embed:image }}
       <img
-        src="{{ embed:thumbnail:url }}"
+        src="{{ embed:image:url }}"
         class="w-full h-auto"
       />
     {{ /if }}
