@@ -10,6 +10,18 @@ Fieldtype for embedding and previewing external content.
 - Supports any provider with oEmbed endpoint or Open Graph meta tags
 - Live preview in the control panel
 
+## Vs. the Built-In Video Fieldtype
+
+If you need to embed videos from YouTube and Vimeo, you should probably stick with Statamic's
+built-in [video fieldtype](https://statamic.dev/fieldtypes/video). It comes with less complexity
+as it doesn't need to fetch the metadata or embed codes.
+
+The fieldtype of this addon becomes useful if you need:
+
+- Other providers and content types like audio players, social media posts, etc
+- Ready-to-render html for embedding the content in an iframe
+- Additional metadata like title, description, thumbnail, etc
+
 ## Installation
 
 Install the addon via Composer:
