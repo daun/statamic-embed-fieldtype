@@ -2,10 +2,13 @@
 
 Fieldtype for embedding and previewing external content.
 
-Fetches oEmbed data and
-shows rich previews in the control panel.
+<img src="art/field-podcast.png" alt="Example embed field" width="650">
 
-![Example embed field](art/field-soundcloud.png)
+## Features
+
+- Augment URLs with embed data: iframe, thumbnail, metadata
+- Supports any provider with oEmbed endpoint or Open Graph meta tags
+- Live preview in the control panel
 
 ## Installation
 
@@ -30,26 +33,28 @@ fields:
 
 ## Frontend
 
-The fieldtype augments the url to an array of embed data that can be used in templates.
+The fieldtype augments the url to an array of embed data. The following example
+will render a simple embed card with either an iframe (if available) or a preview
+image.
 
 ```html
 {{ if embed:url }}
   <article class="border rounded-lg overflow-hidden">
-    {{ if embed:embed }}
+    {{ if embed:code }}
       <div
         class="relative aspect-(--embed-ratio) overflow-hidden [&_iframe]:w-full [&_iframe]:h-full [&_iframe]:border-0"
-        style="--embed-ratio: {{ embed:embed:ratio }}"
+        style="--embed-ratio: {{ embed:code:ratio }}"
       >
-        {{ embed:embed:html }}
+        {{ embed:code:html }}
       </div>
-    {{ elseif embed:thumbnail }}
+    {{ elseif embed:image }}
       <img
-        src="{{ embed:thumbnail:url }}"
+        src="{{ embed:image:url }}"
         class="w-full h-auto"
       />
     {{ /if }}
     {{ if embed:title }}
-      <div class="px-4">
+      <div class="p-4">
         <p class="line-clamp-1 font-semibold">
             <a href="{{ embed:url }}">{{ embed:title }}</a>
         </p>
@@ -79,6 +84,34 @@ fields:
       type: embed
       display: Embed
 +     augment_to_embed_data: false
+```
+
+## Extending the Embed Library
+
+The addon uses the [Embed](https://github.com/php-embed/Embed) library under the hood, which supports
+a variety of providers out of the box: YouTube, Vimeo, Instagram, Flickr, etc. You can customize the
+library instance and settings and also create custom adapters for unsupported providers by registering
+a resolving callback in your service provider. See [Extending Embed](https://github.com/php-embed/Embed?tab=readme-ov-file#extending-embed)
+for details and examples.
+
+```php
+namespace App\Providers;
+
+use Embed\Embed;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function register()
+    {
+        $this->app->afterResolving(Embed::class, function (Embed $embed) {
+            $embed->getExtractorFactory()->addAdapter('mysite.com', MySite::class);
+            $embed->setSettings([
+                'instagram:token' => '12345678',
+                'twitter:token' => 'abcdefgh',
+            ]);
+        });
+    }
+}
 ```
 
 ## License

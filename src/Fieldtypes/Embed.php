@@ -3,21 +3,27 @@
 namespace Daun\StatamicEmbed\Fieldtypes;
 
 use Daun\StatamicEmbed\Services\EmbedService;
-use Statamic\Fieldtypes\Video;
+use Statamic\Fields\Fieldtype;
 
-class Embed extends Video
+class Embed extends Fieldtype
 {
-    protected static $handle = 'embed';
-
-    protected static $title = 'Embed';
-
     protected $icon = 'globe-world-wide-web';
 
+    protected $categories = ['media'];
 
     protected function configFieldItems(): array
     {
         return [
-            ...parent::configFieldItems(),
+            [
+                'display' => __('Appearance'),
+                'fields' => [
+                    'placeholder' => [
+                        'display' => __('Placeholder'),
+                        'instructions' => __('statamic::fieldtypes.text.config.placeholder'),
+                        'type' => 'text',
+                    ],
+                ],
+            ],
             [
                 'display' => __('Frontend'),
                 'fields' => [
@@ -39,7 +45,7 @@ class Embed extends Video
         return [
             ...(parent::preload() ?? []),
             'route' => cp_route('embed.info'),
-            'info' => app(EmbedService::class)->info($url, load: false),
+            'info' => app(EmbedService::class)->info($url, fetch: false),
         ];
     }
 

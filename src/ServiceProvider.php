@@ -2,6 +2,7 @@
 
 namespace Daun\StatamicEmbed;
 
+use Daun\StatamicEmbed\Services\EmbedService;
 use Statamic\Providers\AddonServiceProvider;
 
 class ServiceProvider extends AddonServiceProvider
@@ -13,4 +14,11 @@ class ServiceProvider extends AddonServiceProvider
         ],
         'publicDirectory' => 'resources/dist',
     ];
+
+    public function register()
+    {
+        parent::register();
+
+        $this->app->singleton(EmbedService::class);
+    }
 }

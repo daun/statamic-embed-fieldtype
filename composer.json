@@ -1,6 +1,6 @@
 {
     "name": "daun/statamic-embed-fieldtype",
-    "description": "Fieldtype for embedding and previewing external content in Statamic.",
+    "description": "Fieldtype for embedding and previewing external content in Statamic",
     "license": "MIT",
     "type": "statamic-addon",
     "keywords": [
