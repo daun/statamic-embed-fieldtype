@@ -39,7 +39,7 @@ class Embed extends Video
         return [
             ...(parent::preload() ?? []),
             'route' => cp_route('embed.info'),
-            'info' => app(EmbedService::class)->info($url, load: false),
+            'info' => app(EmbedService::class)->info($url, fetch: false),
         ];
     }
 

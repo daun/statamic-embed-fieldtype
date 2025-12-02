@@ -3,7 +3,7 @@
 namespace Daun\StatamicEmbed\Services;
 
 use Daun\StatamicEmbed\Http\Resources\EmbedResource;
-use Embed\Embed as EmbedLibrary;
+use Embed\Embed;
 use Embed\Extractor;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -11,27 +11,27 @@ use Illuminate\Support\Facades\Log;
 class EmbedService
 {
     public function __construct(
-        protected EmbedLibrary $embed
+        public readonly Embed $embed,
+        protected int $ttl = 604800, // 7 days
     ) {}
 
-    public function info(?string $url, bool $load = true): ?array
+    public function info(?string $url, bool $fetch = true, bool $refresh = false): ?array
     {
-        if (! $url || ! filter_var($url, FILTER_VALIDATE_URL)) {
+        if (! $this->isUrl($url)) {
             return null;
         }
 
-        $key = "daun-statamic-embed-data-".md5($url);
+        $key = "statamic-embed-data-".md5($url);
 
-        if (Cache::has($key)) {
-            $data = Cache::get($key);
-        } else if ($load) {
-            $data = $this->data($url);
-            Cache::set($key, $data, now()->addDays(7));
-        } else {
-            $data = null;
+        if (! $refresh && Cache::has($key)) {
+            return Cache::get($key);
         }
 
-        return $data;
+        if ($fetch) {
+            return Cache::remember($key, $this->ttl, fn () => $this->data($url));
+        }
+
+        return null;
     }
 
     protected function data(string $url): array
@@ -52,5 +52,12 @@ class EmbedService
 
             return null;
         }
+    }
+
+    protected function isUrl(mixed $url): bool
+    {
+        return $url
+            && is_string($url)
+            && filter_var($url, FILTER_VALIDATE_URL);
     }
 }
