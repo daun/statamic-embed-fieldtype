@@ -11,7 +11,6 @@ Fieldtype for embedding and previewing external content.
 - Powered by the [Embed](https://github.com/php-embed/Embed) library and extensible with custom adapters
 - Supports any provider with oEmbed endpoint or Open Graph meta tags
 
-
 ## Vs. the Built-In Video Fieldtype
 
 If you need to embed videos from YouTube and Vimeo, you should probably stick with Statamic's
