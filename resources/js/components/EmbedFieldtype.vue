@@ -50,7 +50,7 @@
                 :src="info.image.url"
                 :class="{
                     'w-full h-auto': !shouldEnforceImage,
-                    'flex-0 h-24 w-auto max-w-1/3 self-stretch object-cover': shouldEnforceImage
+                    'flex-0 h-24 w-auto max-w-1/3! self-stretch object-cover': shouldEnforceImage
                 }"
             />
             <div v-if="shouldShowText && info.title" class="px-4 py-3 grid gap-0.5 text-sm self-start">
