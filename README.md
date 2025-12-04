@@ -6,9 +6,10 @@ Fieldtype for embedding and previewing external content.
 
 ## Features
 
-- Augment URLs with embed data: iframe, thumbnail, metadata
+- Augment URLs with embed data: iframe, thumbnail, title, description
+- Live preview of embedded content in the control panel
+- Powered by the [Embed](https://github.com/php-embed/Embed) library and extensible with custom adapters
 - Supports any provider with oEmbed endpoint or Open Graph meta tags
-- Live preview in the control panel
 
 ## Vs. the Built-In Video Fieldtype
 
