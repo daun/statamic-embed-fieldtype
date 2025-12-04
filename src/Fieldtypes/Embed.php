@@ -28,6 +28,12 @@ class Embed extends Fieldtype
                         'type' => 'text',
                         'default' => 'URL',
                     ],
+                    'border' => [
+                        'display' => __('Border'),
+                        'instructions' => __('statamic::fieldtypes.grid.config.border'),
+                        'type' => 'toggle',
+                        'default' => true,
+                    ],
                 ],
             ],
             [
