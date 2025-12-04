@@ -1,8 +1,12 @@
 <template>
-    <div class="flex flex-col space-y-2 p-2 bg-gray-50 border border-gray-300 dark:bg-transparent dark:border-gray-700 rounded-xl">
+    <div
+        class="flex flex-col space-y-2"
+        :class="{ 'p-2 bg-gray-50 border border-gray-300 dark:bg-transparent dark:border-gray-700 rounded-xl': config.border }"
+    >
         <ui-input-group>
             <ui-input-group-prepend v-if="prepend" :text="__(prepend)" />
             <ui-input
+                type="url"
                 :model-value="value"
                 :isReadOnly="isReadOnly"
                 :placeholder="__(config.placeholder) || 'https://'"
@@ -15,7 +19,11 @@
         </ui-input-group>
         <article
             v-if="info.title || info.code || info.image"
-            class="overflow-hidden bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg"
+            class="overflow-hidden border border-gray-300 dark:border-gray-700 rounded-lg"
+            :class="{
+                'bg-white dark:bg-gray-900': config.border,
+                'bg-gray-50 dark:bg-gray-900 shadow-ui-sm': !config.border
+            }"
         >
             <div
                 v-if="info.code"
