@@ -22,6 +22,12 @@ class Embed extends Fieldtype
                         'instructions' => __('statamic::fieldtypes.text.config.placeholder'),
                         'type' => 'text',
                     ],
+                    'prepend' => [
+                        'display' => __('Prepend'),
+                        'instructions' => __('statamic::fieldtypes.text.config.prepend'),
+                        'type' => 'text',
+                        'default' => 'URL',
+                    ],
                 ],
             ],
             [
