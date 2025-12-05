@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.1] - 2025-12-05
+
+- Show no input prefix by default
+
 ## [1.1.0] - 2025-12-05
 
 - Make url input prefix configurable
@@ -10,5 +14,6 @@
 
 - Initial release
 
+[1.1.1]: https://github.com/daun/statamic-embed-fieldtype/releases/tag/1.1.1
 [1.1.0]: https://github.com/daun/statamic-embed-fieldtype/releases/tag/1.1.0
 [1.0.0]: https://github.com/daun/statamic-embed-fieldtype/releases/tag/1.0.0
