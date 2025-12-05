@@ -82,10 +82,10 @@ export default {
     computed: {
         prepend() {
             const { prepend = 'URL' } = this.config;
-            if (['null', 'false'].includes(prepend)) {
+            if (['null', 'false'].includes(prepend) || typeof prepend !== 'string') {
                 return null;
             } else {
-                return prepend;
+                return prepend.trim();
             }
         },
         shouldShowPreview() {
