@@ -32,7 +32,6 @@ class Embed extends Fieldtype
                         'display' => __('Prepend'),
                         'instructions' => __('statamic::fieldtypes.text.config.prepend'),
                         'type' => 'text',
-                        'default' => 'URL',
                     ],
                     'preview_type' => [
                         'display' => __('Preview'),

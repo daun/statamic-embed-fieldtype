@@ -4,7 +4,7 @@
         :class="{ 'p-2 bg-gray-50 border border-gray-300 dark:bg-transparent dark:border-gray-700 rounded-xl': config.border }"
     >
         <ui-input-group>
-            <ui-input-group-prepend v-if="prepend" :text="__(prepend)" />
+            <ui-input-group-prepend v-if="config.prepend" :text="__(config.prepend)" />
             <ui-input
                 type="url"
                 :model-value="value"
@@ -14,7 +14,7 @@
                 @update:model-value="update"
                 @focus="$emit('focus')"
                 @blur="$emit('blur')"
-                :input-class="prepend ? 'border-s-0' : ''"
+                :input-class="config.prepend ? 'border-s-0' : ''"
             />
         </ui-input-group>
         <article
@@ -80,14 +80,6 @@ export default {
         };
     },
     computed: {
-        prepend() {
-            const { prepend = 'URL' } = this.config;
-            if (['null', 'false'].includes(prepend) || typeof prepend !== 'string') {
-                return null;
-            } else {
-                return prepend.trim();
-            }
-        },
         shouldShowPreview() {
             return this.config.preview_type !== 'none';
         },
