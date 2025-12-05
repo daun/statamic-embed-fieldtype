@@ -2,7 +2,7 @@
 
 Fieldtype for embedding and previewing external content.
 
-<img src="art/field-podcast.png" alt="Example embed field" width="650">
+<img src="art/field-podcast.png" alt="Example embed field" width="600">
 
 ## Features
 
