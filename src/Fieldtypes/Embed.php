@@ -17,10 +17,33 @@ class Embed extends Fieldtype
             [
                 'display' => __('Appearance'),
                 'fields' => [
+                    'border' => [
+                        'display' => __('Border'),
+                        'instructions' => __('statamic::fieldtypes.grid.config.border'),
+                        'type' => 'toggle',
+                        'default' => true,
+                    ],
                     'placeholder' => [
                         'display' => __('Placeholder'),
                         'instructions' => __('statamic::fieldtypes.text.config.placeholder'),
                         'type' => 'text',
+                    ],
+                    'prepend' => [
+                        'display' => __('Prepend'),
+                        'instructions' => __('statamic::fieldtypes.text.config.prepend'),
+                        'type' => 'text',
+                        'default' => 'URL',
+                    ],
+                    'preview_type' => [
+                        'display' => __('Preview'),
+                        'type' => 'button_group',
+                        'options' => [
+                            'embed' => __('Embed'),
+                            'thumbnail' => __('Thumbnail'),
+                            'text' => __('Text'),
+                            'none' => __('None'),
+                        ],
+                        'default' => 'embed',
                     ],
                 ],
             ],

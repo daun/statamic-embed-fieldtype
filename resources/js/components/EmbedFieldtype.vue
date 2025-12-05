@@ -1,8 +1,12 @@
 <template>
-    <div class="flex flex-col space-y-2 p-2 bg-gray-50 border border-gray-300 dark:bg-transparent dark:border-gray-700 rounded-xl">
+    <div
+        class="flex flex-col gap-2"
+        :class="{ 'p-2 bg-gray-50 border border-gray-300 dark:bg-transparent dark:border-gray-700 rounded-xl': config.border }"
+    >
         <ui-input-group>
-            <ui-input-group-prepend :text="__('URL')" />
+            <ui-input-group-prepend v-if="prepend" :text="__(prepend)" />
             <ui-input
+                type="url"
                 :model-value="value"
                 :isReadOnly="isReadOnly"
                 :placeholder="__(config.placeholder) || 'https://'"
@@ -10,15 +14,20 @@
                 @update:model-value="update"
                 @focus="$emit('focus')"
                 @blur="$emit('blur')"
-                input-class="border-s-0"
+                :input-class="prepend ? 'border-s-0' : ''"
             />
         </ui-input-group>
         <article
-            v-if="info.title || info.code || info.image"
-            class="overflow-hidden bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg"
+            v-if="shouldShowPreview && hasPreviewData"
+            class="overflow-hidden border border-gray-300 dark:border-gray-700 rounded-lg"
+            :class="{
+                'bg-white dark:bg-gray-900': config.border,
+                'bg-gray-50 dark:bg-gray-900 shadow-ui-sm': !config.border,
+                'flex': shouldEnforceImage && info.image
+            }"
         >
             <div
-                v-if="info.code"
+                v-if="shouldShowEmbed && info.code"
                 :class="{ 'p-2 pb-0': info.code.borderRadius }"
             >
                 <div
@@ -37,11 +46,14 @@
             </div>
 
             <img
-                v-else-if="info.image"
+                v-else-if="shouldShowImage && info.image"
                 :src="info.image.url"
-                class="w-full h-auto"
+                :class="{
+                    'w-full h-auto': !shouldEnforceImage,
+                    'flex-0 h-24 w-auto max-w-1/3! self-stretch object-cover': shouldEnforceImage
+                }"
             />
-            <div v-if="info.title" class="px-4 py-3 grid gap-0.5 text-sm">
+            <div v-if="shouldShowText && info.title" class="px-4 py-3 grid gap-0.5 text-sm self-start">
                 <p class="line-clamp-1 font-semibold text-gray-800 dark:text-gray-200">
                     <a :href="info.url">{{ info.title }}</a>
                 </p>
@@ -68,6 +80,32 @@ export default {
         };
     },
     computed: {
+        prepend() {
+            const { prepend = 'URL' } = this.config;
+            if (['null', 'false'].includes(prepend)) {
+                return null;
+            } else {
+                return prepend;
+            }
+        },
+        shouldShowPreview() {
+            return this.config.preview_type !== 'none';
+        },
+        shouldShowEmbed() {
+            return ['embed'].includes(this.config.preview_type);
+        },
+        shouldShowImage() {
+            return ['embed', 'thumbnail'].includes(this.config.preview_type);
+        },
+        shouldEnforceImage() {
+            return ['thumbnail'].includes(this.config.preview_type);
+        },
+        shouldShowText() {
+            return ['embed', 'thumbnail', 'text'].includes(this.config.preview_type);
+        },
+        hasPreviewData() {
+            return this.info.title || this.info.code || this.info.image;
+        },
         info() {
             return this.embedInfo[this.value] || {};
         },
