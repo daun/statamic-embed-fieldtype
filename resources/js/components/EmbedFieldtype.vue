@@ -47,8 +47,10 @@
 
             <img
                 v-else-if="shouldShowImage && info.image"
-                :src="info.image.url"
                 loading="lazy"
+                :src="info.image.url"
+                :width="info.image.width"
+                :height="info.image.height"
                 :class="{
                     'w-full h-auto': !shouldEnforceImage,
                     'flex-0 h-24 w-auto max-w-1/3! self-stretch object-cover': shouldEnforceImage
