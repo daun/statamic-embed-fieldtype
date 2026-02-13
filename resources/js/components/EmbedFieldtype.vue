@@ -31,7 +31,7 @@
                 :class="{ 'p-2 pb-0': info.code.borderRadius }"
             >
                 <div
-                    v-html="info.code.html"
+                    v-html="info.code.htmlLazy || info.code.html"
                     class="relative overflow-hidden [&_iframe]:w-full! [&_iframe]:max-w-none! [&_iframe]:h-full! [&_iframe]:border-0"
                     :class="{
                         'aspect-(--embed-ratio)': info.code.ratio,
@@ -47,7 +47,10 @@
 
             <img
                 v-else-if="shouldShowImage && info.image"
+                loading="lazy"
                 :src="info.image.url"
+                :width="info.image.width"
+                :height="info.image.height"
                 :class="{
                     'w-full h-auto': !shouldEnforceImage,
                     'flex-0 h-24 w-auto max-w-1/3! self-stretch object-cover': shouldEnforceImage

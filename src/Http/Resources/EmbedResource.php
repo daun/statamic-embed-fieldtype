@@ -88,9 +88,12 @@ class EmbedResource extends JsonResource
         $ratio = $width && $height ? $width / $height : 0;
         $orientation = $ratio ? ($ratio >= 1 ? 'landscape' : 'portrait') : null;
 
+        $htmlLazy = str_ireplace('<iframe', '<iframe loading="lazy"', $html);
+
         return [
             'type' => $type,
             'html' => $html,
+            'htmlLazy' => $htmlLazy,
             'width' => $width,
             'maxWidth' => $maxWidth,
             'height' => $height,
