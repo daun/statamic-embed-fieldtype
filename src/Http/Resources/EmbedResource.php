@@ -23,7 +23,7 @@ class EmbedResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'url' => $this->resource->url ?? null,
+            'url' => $this->stringify($this->resource->url),
             'title' => $this->resource->title ?? null,
             'description' => $this->resource->description ?? null,
             'language' => $this->resource->language ?? null,
@@ -43,7 +43,7 @@ class EmbedResource extends JsonResource
         return ($name || $url) ? [
             'name' => $name,
             'slug' => $slug,
-            'url' => $this->resource->providerUrl ?? null,
+            'url' => $this->stringify($url),
         ] : null;
     }
 
@@ -54,8 +54,16 @@ class EmbedResource extends JsonResource
 
         return $name ? [
             'name' => $name,
-            'url' => $url,
+            'url' => $this->stringify($url),
         ] : null;
+    }
+
+    /**
+     * Cast a value (such as a PSR-7 URI object) to a string, preserving null.
+     */
+    protected function stringify(mixed $value): ?string
+    {
+        return $value !== null ? (string) $value : null;
     }
 
     protected function code(): ?array
