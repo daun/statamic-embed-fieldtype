@@ -5,6 +5,7 @@ namespace Daun\StatamicEmbed\Http\Resources;
 use Embed\Extractor;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Str;
+use Psr\Http\Message\UriInterface;
 
 class EmbedResource extends JsonResource
 {
@@ -23,7 +24,7 @@ class EmbedResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'url' => $this->resource->url ?? null,
+            'url' => $this->url($this->resource->url ?? null),
             'title' => $this->resource->title ?? null,
             'description' => $this->resource->description ?? null,
             'language' => $this->resource->language ?? null,
@@ -38,24 +39,31 @@ class EmbedResource extends JsonResource
     {
         $name = $this->resource->providerName ?? null;
         $slug = $name ? Str::slug($name) : null;
-        $url = $this->resource->providerUrl ?? null;
+        $url = $this->url($this->resource->providerUrl ?? null);
 
         return ($name || $url) ? [
             'name' => $name,
             'slug' => $slug,
-            'url' => $this->resource->providerUrl ?? null,
+            'url' => $url,
         ] : null;
     }
 
     protected function author(): ?array
     {
         $name = $this->resource->authorName ?? null;
-        $url = $this->resource->authorUrl ?? null;
+        $url = $this->url($this->resource->authorUrl ?? null);
 
         return $name ? [
             'name' => $name,
             'url' => $url,
         ] : null;
+    }
+
+    protected function url(mixed $url): ?string
+    {
+        return ($url instanceof UriInterface || is_string($url))
+            ? ((string) $url ?: null)
+            : null;
     }
 
     protected function code(): ?array
@@ -107,9 +115,8 @@ class EmbedResource extends JsonResource
     {
         $oembed = $this->resource->getOEmbed()->all();
 
-        $url = $this->resource->image
-            ? ((string) $this->resource->image)
-            : ($oembed['thumbnail_url'] ?? null);
+        $url = $this->url($this->resource->image ?? null)
+            ?? $this->url($oembed['thumbnail_url'] ?? null);
 
         if (! $url) {
             return null;
