@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.3.2] - 2026-09-05
+
+- Fix `refresh` not busting the embed data cache
+
 ## [1.3.1] - 2026-08-14
 
 - Fix cache serialization in Laravel 13
@@ -27,6 +31,7 @@
 
 - Initial release
 
+[1.3.2]: https://github.com/daun/statamic-embed-fieldtype/releases/tag/1.3.2
 [1.3.1]: https://github.com/daun/statamic-embed-fieldtype/releases/tag/1.3.1
 [1.3.0]: https://github.com/daun/statamic-embed-fieldtype/releases/tag/1.3.0
 [1.2.0]: https://github.com/daun/statamic-embed-fieldtype/releases/tag/1.2.0
