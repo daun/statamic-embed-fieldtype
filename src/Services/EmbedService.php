@@ -28,6 +28,10 @@ class EmbedService
         }
 
         if ($fetch) {
+            if ($refresh) {
+                Cache::forget($key);
+            }
+
             return Cache::remember($key, $this->ttl, fn () => $this->data($url));
         }
 
