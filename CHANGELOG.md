@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.3.3] - 2026-11-06
+
+- Improve preview styling in Bard context
+
 ## [1.3.2] - 2026-09-05
 
 - Fix `refresh` not busting the embed data cache
@@ -31,6 +35,7 @@
 
 - Initial release
 
+[1.3.3]: https://github.com/daun/statamic-embed-fieldtype/releases/tag/1.3.3
 [1.3.2]: https://github.com/daun/statamic-embed-fieldtype/releases/tag/1.3.2
 [1.3.1]: https://github.com/daun/statamic-embed-fieldtype/releases/tag/1.3.1
 [1.3.0]: https://github.com/daun/statamic-embed-fieldtype/releases/tag/1.3.0
