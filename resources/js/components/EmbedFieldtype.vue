@@ -57,15 +57,15 @@
                 }"
             />
             <div v-if="shouldShowText && info.title" class="px-4 py-3 grid gap-0.5 text-sm self-start">
-                <p class="line-clamp-1 font-semibold text-gray-800 dark:text-gray-200">
-                    <a :href="info.url">{{ info.title }}</a>
-                </p>
-                <p v-if="info.description || info.author?.name" class="line-clamp-1 text-gray-500 dark:text-gray-400">
+                <div class="line-clamp-1 font-semibold text-gray-800 dark:text-gray-200">
+                    <a :href="info.url" class="font-semibold! text-inherit! no-underline!">{{ info.title }}</a>
+                </div>
+                <div v-if="info.description || info.author?.name" class="line-clamp-1 text-gray-500 dark:text-gray-400">
                     {{ info.description || info.author?.name }}
-                </p>
-                <p v-if="info.provider?.url" class="text-gray-400 dark:text-gray-600">
+                </div>
+                <div v-if="info.provider?.url" class="text-gray-400 dark:text-gray-600">
                     {{ formatHostname(info.provider?.url) }}
-                </p>
+                </div>
             </div>
         </article>
     </div>
