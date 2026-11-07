@@ -107,6 +107,17 @@ export default {
         loadEmbedInfoDebounced() {
             return debounce(this.loadEmbedInfo, 300);
         },
+        replicatorPreview() {
+            if (!this.showFieldPreviews || !this.value) return;
+
+            const label = escapeHtml(this.info.title || this.formatUrl(this.value));
+            const image = this.info.image?.url;
+            const thumbnail = image
+                ? `<img src="${escapeHtml(image)}" width="20" height="20" class="max-w-5 max-h-5 rounded-sm mr-1 object-cover" />`
+                : '';
+
+            return replicatorPreviewHtml(`${thumbnail}${label}`);
+        },
     },
     methods: {
         loadEmbedInfo(url) {
@@ -127,6 +138,9 @@ export default {
             } catch (_) {
                 return false;
             }
+        },
+        formatUrl(url) {
+            return url.replace(/^https?:\/\//i, '').replace(/^www\d?\./i, '').replace(/\/$/, '');
         },
         formatHostname(url) {
             try {
