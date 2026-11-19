@@ -2,6 +2,8 @@
 
 namespace Daun\StatamicEmbed;
 
+use Daun\StatamicEmbed\Commands\ClearCommand;
+use Daun\StatamicEmbed\Commands\WarmCommand;
 use Daun\StatamicEmbed\Services\EmbedService;
 use Embed\Embed;
 use Embed\Http\FactoryDiscovery;
@@ -11,6 +13,11 @@ use Statamic\Providers\AddonServiceProvider;
 
 class ServiceProvider extends AddonServiceProvider
 {
+    protected $commands = [
+        ClearCommand::class,
+        WarmCommand::class,
+    ];
+
     protected $vite = [
         'input' => [
             'resources/css/addon.css',

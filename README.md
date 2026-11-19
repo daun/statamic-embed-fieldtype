@@ -121,6 +121,20 @@ set `cache_store` to a store from `config/cache.php`, e.g. `redis` or `database`
 Once the TTL is over, the cached data is still served and refreshed in the background after the
 response. If the refresh fails, e.g. because a video was taken down, the previous data is kept.
 
+## Commands
+
+```bash
+# Fetch embed data for all embed fields in entries, terms and globals
+php please embed:warm
+php please embed:warm --queue   # dispatch queued jobs
+php please embed:warm --force   # refetch fresh data as well
+
+# Clear cached embed data
+php please embed:clear
+php please embed:clear https://youtube.com/watch?v=xyz
+php please embed:clear --provider=youtube   # provider name or hostname
+```
+
 ## Extending the Embed Library
 
 The addon uses the [Embed](https://github.com/php-embed/Embed) library under the hood, which supports
