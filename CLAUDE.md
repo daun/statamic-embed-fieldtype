@@ -22,6 +22,10 @@ pnpm dev                   # Vite dev server
 pnpm build                 # Build production assets
 ```
 
+## Docs
+
+- `README.md` is a short overview with quick start; detailed usage lives in `DOCUMENTATION.md`
+
 ## Architecture
 
 ### Backend (PHP)
