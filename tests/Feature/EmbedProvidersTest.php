@@ -6,6 +6,7 @@ use Daun\StatamicEmbed\Support\EmbedProviders as Providers;
 use Embed\Embed;
 use Illuminate\Support\Defer\DeferredCallbackCollection;
 use Illuminate\Support\Facades\Cache;
+use Statamic\Facades\Antlers;
 use Tests\Concerns\CreatesEmbedContent;
 use Tests\Fakes\FakeEmbed;
 use Tests\Fakes\FakeEmbedExtractor as FakeExtractor;
@@ -44,7 +45,7 @@ it('groups and counts providers', function () {
     $this->createPage(['video' => 'https://youtube.com/watch?v=2']);
     EmbedProviders::build();
 
-    expect(EmbedProviders::all()->map(fn ($p) => [$p['slug'], $p['name'], $p['count']])->all())->toBe([
+    expect(EmbedProviders::all()->map(fn ($p) => [$p['slug'], $p['name'], $p['embeds']])->all())->toBe([
         ['youtube', 'YouTube', 3],
         ['spotify', 'Spotify', 1],
     ]);
@@ -64,7 +65,7 @@ it('counts urls per localization', function () {
     $this->createPage([], site: 'de', origin: $origin);
     EmbedProviders::build();
 
-    expect(EmbedProviders::all()->first()['count'])->toBe(2);
+    expect(EmbedProviders::all()->first()['embeds'])->toBe(2);
 });
 
 it('leaves out urls that fail to resolve', function () {
@@ -129,7 +130,18 @@ it('returns providers as json', function () {
         ->assertOk()
         ->assertHeader('Cache-Control', 'max-age=1800, public')
         ->assertExactJson([
-            'providers' => [['slug' => 'youtube', 'name' => 'YouTube', 'url' => null, 'count' => 1]],
+            'providers' => [['slug' => 'youtube', 'name' => 'YouTube', 'url' => null, 'embeds' => 1]],
             'slugs' => ['youtube'],
         ]);
+});
+
+it('provides an antlers tag', function () {
+    $this->createPage([
+        'video' => 'https://youtube.com/watch?v=1',
+        'blocks' => [['type' => 'media', 'video' => 'https://open.spotify.com/track/1']],
+    ]);
+    EmbedProviders::build();
+
+    expect((string) Antlers::parse('{{ embed_providers }}{{ name }}:{{ embeds }} {{ /embed_providers }}'))->toBe('Spotify:1 YouTube:1 ');
+    expect((string) Antlers::parse('{{ embed_providers:slugs }}{{ value }} {{ /embed_providers:slugs }}'))->toBe('spotify youtube ');
 });

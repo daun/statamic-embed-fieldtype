@@ -26,7 +26,7 @@ class EmbedProviders
     ) {}
 
     /**
-     * @return Collection<int, array{slug: string, name: ?string, url: ?string, count: int}>
+     * @return Collection<int, array{slug: string, name: ?string, url: ?string, embeds: int}>
      */
     public function all(): Collection
     {
@@ -97,9 +97,9 @@ class EmbedProviders
                 'slug' => $group->first()['slug'],
                 'name' => $group->first()['name'] ?? null,
                 'url' => $group->first()['url'] ?? null,
-                'count' => $group->count(),
+                'embeds' => $group->count(),
             ])
-            ->sortBy([['count', 'desc'], ['slug', 'asc']])
+            ->sortBy([['embeds', 'desc'], ['slug', 'asc']])
             ->values();
     }
 

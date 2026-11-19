@@ -20,6 +20,10 @@ class ServiceProvider extends AddonServiceProvider
         WarmCommand::class,
     ];
 
+    protected $tags = [
+        Tags\EmbedProviders::class,
+    ];
+
     protected $vite = [
         'input' => [
             'resources/css/addon.css',
