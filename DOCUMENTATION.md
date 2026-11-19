@@ -79,25 +79,58 @@ fields:
 +     augment_to_embed_data: false
 ```
 
+## Configuration
+
+Optionally publish the config file to customize the addon:
+
+```bash
+php artisan vendor:publish --tag=statamic-embed-fieldtype-config
+```
+
+| Option        | Default   | Description                                                    |
+| ------------- | --------- | -------------------------------------------------------------- |
+| `cache_store` | `null`    | Cache store name, or `null` for a file store in `storage/statamic/embed` |
+| `cache_ttl`   | `2592000` | Seconds until embed data is refreshed (30 days), `null` for never |
+
+## Caching
+
+Embed data is cached in a dedicated store that survives `php artisan cache:clear`, so deployments
+don't trigger refetching all embeds. If your storage directory isn't persisted between deployments,
+set `cache_store` to a store from `config/cache.php`, e.g. `redis` or `database`.
+
+Once the TTL is over, the cached data is still served and refreshed in the background after the
+response. If the refresh fails, e.g. because a video was taken down, the previous data is kept.
+Editors can force a refresh using the refresh button in the field.
+
+## Commands
+
+```bash
+# Fetch embed data for all embed fields in entries, terms and globals
+php please embed:warm
+php please embed:warm --queue   # dispatch queued jobs
+php please embed:warm --force   # refetch fresh data as well
+
+# Clear cached embed data
+php please embed:clear
+php please embed:clear https://youtube.com/watch?v=xyz
+php please embed:clear --provider=youtube   # provider name or hostname
+
+# List embed providers used on the site
+php please embed:providers
+php please embed:providers --rebuild
+```
+
 ## Consent
 
 Embeds from third-party providers usually set cookies, so you might want visitors to consent
-before loading them. The embed data contains the provider slug for gating single embeds, and the
-addon keeps a list of all providers used across the site for cookie banners.
+before loading them. The addon helps with gating single embeds and listing all providers used
+across the site for cookie banners.
 
 ### Gating embeds
 
-Render the embed code into a template and only insert it once the visitor has consented to the
-provider.
-
-```html
-{{ if embed:code }}
-  <div data-embed-provider="{{ embed:provider:slug }}">
-    <template>{{ embed:code:html }}</template>
-    <button>Load content from {{ embed:provider:name }}</button>
-  </div>
-{{ /if }}
-```
+The embed data contains the provider's `slug` and `name` at `embed:provider`. Use it to keep the
+embed code from rendering until the visitor has consented to that provider, as shown in the
+[example](#example-cookie-banner) below.
 
 ### Listing providers
 
@@ -172,47 +205,6 @@ const loadEmbeds = (preferences) => preferences
 
 loadEmbeds(consent.preferences.getAll());
 consent.on('update', loadEmbeds);
-```
-
-## Configuration
-
-Optionally publish the config file to customize the addon:
-
-```bash
-php artisan vendor:publish --tag=statamic-embed-fieldtype-config
-```
-
-| Option        | Default   | Description                                                    |
-| ------------- | --------- | -------------------------------------------------------------- |
-| `cache_store` | `null`    | Cache store name, or `null` for a file store in `storage/statamic/embed` |
-| `cache_ttl`   | `2592000` | Seconds until embed data is refreshed (30 days), `null` for never |
-
-## Caching
-
-Embed data is cached in a dedicated store that survives `php artisan cache:clear`, so deployments
-don't trigger refetching all embeds. If your storage directory isn't persisted between deployments,
-set `cache_store` to a store from `config/cache.php`, e.g. `redis` or `database`.
-
-Once the TTL is over, the cached data is still served and refreshed in the background after the
-response. If the refresh fails, e.g. because a video was taken down, the previous data is kept.
-Editors can force a refresh using the refresh button in the field.
-
-## Commands
-
-```bash
-# Fetch embed data for all embed fields in entries, terms and globals
-php please embed:warm
-php please embed:warm --queue   # dispatch queued jobs
-php please embed:warm --force   # refetch fresh data as well
-
-# Clear cached embed data
-php please embed:clear
-php please embed:clear https://youtube.com/watch?v=xyz
-php please embed:clear --provider=youtube   # provider name or hostname
-
-# List embed providers used on the site
-php please embed:providers
-php please embed:providers --rebuild
 ```
 
 ## Extending the Embed Library
