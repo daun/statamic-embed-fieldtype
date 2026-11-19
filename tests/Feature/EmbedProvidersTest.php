@@ -127,7 +127,7 @@ it('returns providers as json', function () {
     $this->createPage(['video' => 'https://youtube.com/watch?v=1']);
     EmbedProviders::build();
 
-    $this->get('/!/statamic-embed-fieldtype/providers')
+    $this->get('/!/embed/providers')
         ->assertOk()
         ->assertHeader('Cache-Control', 'max-age=1800, public')
         ->assertExactJson([
@@ -158,5 +158,5 @@ it('rebuilds and prints providers', function () {
 });
 
 it('disables the json route by default', function () {
-    $this->get('/!/statamic-embed-fieldtype/providers')->assertNotFound();
+    $this->get('/!/embed/providers')->assertNotFound();
 });

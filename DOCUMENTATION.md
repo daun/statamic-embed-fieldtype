@@ -91,7 +91,7 @@ php artisan vendor:publish --tag=statamic-embed-fieldtype-config
 | ------------- | --------- | -------------------------------------------------------------- |
 | `cache_store` | `null`    | Cache store name, or `null` for a file store in `storage/statamic/embed` |
 | `cache_ttl`   | `2592000` | Seconds until embed data is refreshed (30 days), `null` for never |
-| `providers_route` | `false` | Expose the list of embed providers as JSON |
+| `providers_route` | `false` | Expose the list of embed providers as JSON route |
 
 ## Caching
 
@@ -156,14 +156,22 @@ contains its provider at `embed:provider`, and the `embed_providers` tag lists a
 across the site. Combine them to build a cookie banner that gates embeds per provider, here using
 [@grrr/cookie-consent](https://github.com/grrr-amsterdam/cookie-consent).
 
+### Frontend
+
 ```html
 {{ if embed:code }}
-  <template data-embed-provider="{{ embed:provider:slug }}">{{ embed:code:html }}</template>
-  <p data-cookie-consent-rejected="{{ embed:provider:slug }}">Allow {{ embed:provider:name }} to view this content.</p>
+  <template data-embed-provider="{{ embed:provider:slug }}">
+    {{ embed:code:html }}
+  </template>
+  <p data-cookie-consent-rejected="{{ embed:provider:slug }}">
+    Allow {{ embed:provider:name }} to view this content.
+  </p>
 {{ /if }}
 
 <cookie-consent data-cookies='[{{ embed_providers }}{"id": "{{ slug }}", "label": "{{ name }}"}{{ unless last }},{{ /unless }}{{ /embed_providers }}]'></cookie-consent>
 ```
+
+### JavaScript
 
 ```js
 import CookieConsent from '@grrr/cookie-consent';
@@ -180,5 +188,7 @@ loadEmbeds(consent.preferences.getAll());
 consent.on('update', loadEmbeds);
 ```
 
+### Route
+
 On statically cached sites, enable the `providers_route` config option and load the list from the
-route `/!/statamic-embed-fieldtype/providers` instead.
+route `/!/embed/providers` instead.

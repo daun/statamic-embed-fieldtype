@@ -32,8 +32,8 @@ return [
     | Providers Route
     |--------------------------------------------------------------------------
     |
-    | Expose the list of embed providers as JSON for cookie banners on
-    | statically cached sites: /!/statamic-embed-fieldtype/providers
+    | Expose the list of used embed providers as JSON for cookie banners on
+    | statically cached sites: /!/embed/providers
     |
     */
 
