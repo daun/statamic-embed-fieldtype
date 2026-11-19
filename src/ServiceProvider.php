@@ -3,7 +3,10 @@
 namespace Daun\StatamicEmbed;
 
 use Daun\StatamicEmbed\Services\EmbedService;
+use Embed\Embed;
 use Embed\Http\FactoryDiscovery;
+use Illuminate\Contracts\Cache\Repository;
+use Illuminate\Support\Facades\Cache;
 use Statamic\Providers\AddonServiceProvider;
 
 class ServiceProvider extends AddonServiceProvider
@@ -20,9 +23,22 @@ class ServiceProvider extends AddonServiceProvider
     {
         parent::register();
 
-        $this->app->singleton(EmbedService::class);
+        $this->app->singleton(EmbedService::class, fn ($app) => new EmbedService(
+            $app->make(Embed::class),
+            $this->cacheStore(),
+            config('statamic-embed-fieldtype.cache_ttl', 60 * 60 * 24 * 30),
+        ));
 
         $this->allowUnserializingCachedUris();
+    }
+
+    protected function cacheStore(): Repository
+    {
+        $store = config('statamic-embed-fieldtype.cache_store');
+
+        return $store
+            ? Cache::store($store)
+            : Cache::build(['driver' => 'file', 'path' => storage_path('statamic/embed')]);
     }
 
     protected function allowUnserializingCachedUris(): void

@@ -99,6 +99,28 @@ fields:
 +     augment_to_embed_data: false
 ```
 
+## Configuration
+
+Optionally publish the config file to customize the addon:
+
+```bash
+php artisan vendor:publish --tag=statamic-embed-fieldtype-config
+```
+
+| Option        | Default   | Description                                                    |
+| ------------- | --------- | -------------------------------------------------------------- |
+| `cache_store` | `null`    | Cache store name, or `null` for a file store in `storage/statamic/embed` |
+| `cache_ttl`   | `2592000` | Seconds until embed data is refreshed (30 days), `null` for never |
+
+## Caching
+
+Embed data is cached in a dedicated store that survives `php artisan cache:clear`, so deployments
+don't trigger refetching all embeds. If your storage directory isn't persisted between deployments,
+set `cache_store` to a store from `config/cache.php`, e.g. `redis` or `database`.
+
+Once the TTL is over, the cached data is still served and refreshed in the background after the
+response. If the refresh fails, e.g. because a video was taken down, the previous data is kept.
+
 ## Extending the Embed Library
 
 The addon uses the [Embed](https://github.com/php-embed/Embed) library under the hood, which supports
