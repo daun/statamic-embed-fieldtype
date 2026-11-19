@@ -27,4 +27,16 @@ return [
 
     'cache_ttl' => 60 * 60 * 24 * 30,
 
+    /*
+    |--------------------------------------------------------------------------
+    | Providers Route
+    |--------------------------------------------------------------------------
+    |
+    | Expose the list of embed providers as JSON for cookie banners on
+    | statically cached sites: /!/statamic-embed-fieldtype/providers
+    |
+    */
+
+    'providers_route' => false,
+
 ];

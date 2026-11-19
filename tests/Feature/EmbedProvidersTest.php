@@ -123,6 +123,7 @@ it('removes providers no longer in use', function () {
 });
 
 it('returns providers as json', function () {
+    config(['statamic-embed-fieldtype.providers_route' => true]);
     $this->createPage(['video' => 'https://youtube.com/watch?v=1']);
     EmbedProviders::build();
 
@@ -154,4 +155,8 @@ it('rebuilds and prints providers', function () {
     $this->artisan('statamic:embed:providers --rebuild')
         ->expectsTable(['Provider', 'Slug', 'Embeds', 'URL'], [['YouTube', 'youtube', 1, null]])
         ->assertSuccessful();
+});
+
+it('disables the json route by default', function () {
+    $this->get('/!/statamic-embed-fieldtype/providers')->assertNotFound();
 });

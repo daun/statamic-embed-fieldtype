@@ -91,6 +91,7 @@ php artisan vendor:publish --tag=statamic-embed-fieldtype-config
 | ------------- | --------- | -------------------------------------------------------------- |
 | `cache_store` | `null`    | Cache store name, or `null` for a file store in `storage/statamic/embed` |
 | `cache_ttl`   | `2592000` | Seconds until embed data is refreshed (30 days), `null` for never |
+| `providers_route` | `false` | Expose the list of embed providers as JSON |
 
 ## Caching
 
@@ -179,4 +180,5 @@ loadEmbeds(consent.preferences.getAll());
 consent.on('update', loadEmbeds);
 ```
 
-On statically cached sites, load the list from `/!/statamic-embed-fieldtype/providers` instead.
+On statically cached sites, enable the `providers_route` config option and load the list from the
+route `/!/statamic-embed-fieldtype/providers` instead.

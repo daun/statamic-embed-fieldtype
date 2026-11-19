@@ -29,7 +29,7 @@ The fieldtype of this addon becomes useful if you need:
 
 1. Install using `composer require daun/statamic-embed-fieldtype`
 2. Add an `embed` field to your blueprint
-3. Render the embed code using `{{ embed:code:html }}` in your views
+3. Render the embed using the field name in your views
 
 ```html
 <article>
