@@ -120,93 +120,6 @@ php please embed:providers
 php please embed:providers --rebuild
 ```
 
-## Consent
-
-Embeds from third-party providers usually set cookies, so you might want visitors to consent
-before loading them. The addon helps with gating single embeds and listing all providers used
-across the site for cookie banners.
-
-### Gating embeds
-
-The embed data contains the provider's `slug` and `name` at `embed:provider`. Use it to keep the
-embed code from rendering until the visitor has consented to that provider, as shown in the
-[example](#example-cookie-banner) below.
-
-### Listing providers
-
-The list contains all providers used in published entries, terms and globals, sorted by the number
-of embeds. It's cached and updated in the background every five minutes.
-
-```json
-[
-  { "slug": "youtube", "name": "YouTube", "url": "https://www.youtube.com/", "embeds": 90 },
-  { "slug": "spotify", "name": "Spotify", "url": "https://spotify.com", "embeds": 37 }
-]
-```
-
-On statically cached sites, fetch the list from the JSON endpoint so pages don't need to be
-invalidated when it changes. Browsers cache the response for 30 minutes.
-
-```js
-const { providers, slugs } = await fetch('/!/statamic-embed-fieldtype/providers').then((r) => r.json());
-```
-
-In templates, use the `embed_providers` tag.
-
-```html
-{{ embed_providers }}
-  <label><input type="checkbox" name="consent[]" value="{{ slug }}"> {{ name }}</label>
-{{ /embed_providers }}
-
-{{ embed_providers:slugs }}{{ value }}{{ /embed_providers:slugs }}
-```
-
-In PHP, use the `EmbedProviders` facade.
-
-```php
-use Daun\StatamicEmbed\Facades\EmbedProviders;
-
-EmbedProviders::all();   // Collection of providers
-EmbedProviders::slugs(); // ['youtube', 'spotify']
-```
-
-### Example: Cookie Banner
-
-This example uses the [@grrr/cookie-consent](https://github.com/grrr-amsterdam/cookie-consent)
-custom element, with each provider as a separate cookie type. Embeds are rendered into templates
-and only inserted once their provider was accepted.
-
-```html
-{{ if embed:code }}
-  <template data-embed-provider="{{ embed:provider:slug }}">{{ embed:code:html }}</template>
-  <p data-cookie-consent-rejected="{{ embed:provider:slug }}">
-    Allow cookies from {{ embed:provider:name }} to view this content.
-  </p>
-{{ /if }}
-```
-
-```js
-import CookieConsent from '@grrr/cookie-consent';
-
-const { providers } = await fetch('/!/statamic-embed-fieldtype/providers').then((r) => r.json());
-
-// The element reads its cookie types on creation, so set them before defining it
-const consent = document.createElement('cookie-consent');
-consent.dataset.cookies = JSON.stringify(providers.map(({ slug, name }) => ({ id: slug, label: name })));
-document.body.append(consent);
-customElements.define('cookie-consent', CookieConsent);
-
-const loadEmbeds = (preferences) => preferences
-  .filter(({ accepted }) => accepted)
-  .forEach(({ id }) => {
-    document.querySelectorAll(`template[data-embed-provider="${id}"]`)
-      .forEach((template) => template.replaceWith(template.content));
-  });
-
-loadEmbeds(consent.preferences.getAll());
-consent.on('update', loadEmbeds);
-```
-
 ## Extending the Embed Library
 
 The addon uses the [Embed](https://github.com/php-embed/Embed) library under the hood, which supports
@@ -234,3 +147,36 @@ class AppServiceProvider extends ServiceProvider
     }
 }
 ```
+
+## Consent
+
+Embeds from third-party providers usually set cookies and might require consent. The embed data
+contains its provider at `embed:provider`, and the `embed_providers` tag lists all providers used
+across the site. Combine them to build a cookie banner that gates embeds per provider, here using
+[@grrr/cookie-consent](https://github.com/grrr-amsterdam/cookie-consent).
+
+```html
+{{ if embed:code }}
+  <template data-embed-provider="{{ embed:provider:slug }}">{{ embed:code:html }}</template>
+  <p data-cookie-consent-rejected="{{ embed:provider:slug }}">Allow {{ embed:provider:name }} to view this content.</p>
+{{ /if }}
+
+<cookie-consent data-cookies='[{{ embed_providers }}{"id": "{{ slug }}", "label": "{{ name }}"}{{ unless last }},{{ /unless }}{{ /embed_providers }}]'></cookie-consent>
+```
+
+```js
+import CookieConsent from '@grrr/cookie-consent';
+
+customElements.define('cookie-consent', CookieConsent);
+
+const consent = document.querySelector('cookie-consent');
+const loadEmbeds = (preferences) => preferences
+  .filter(({ accepted }) => accepted)
+  .forEach(({ id }) => document.querySelectorAll(`template[data-embed-provider="${id}"]`)
+    .forEach((template) => template.replaceWith(template.content)));
+
+loadEmbeds(consent.preferences.getAll());
+consent.on('update', loadEmbeds);
+```
+
+On statically cached sites, load the list from `/!/statamic-embed-fieldtype/providers` instead.
