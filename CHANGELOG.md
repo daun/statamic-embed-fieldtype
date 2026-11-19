@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.5.0] - 2026-11-19
+
+- Persistent embed cache with configurable TTL, background refresh and refresh button
+- Site-wide list of embed providers for consent banners
+
 ## [1.4.0] - 2026-11-07
 
 - Show thumbnail and title in replicator previews
