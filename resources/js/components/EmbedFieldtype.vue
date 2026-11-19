@@ -15,7 +15,19 @@
                 @focus="$emit('focus')"
                 @blur="$emit('blur')"
                 :input-class="config.prepend ? 'border-s-0' : ''"
-            />
+            >
+                <template #append v-if="isUrl(value) && !isReadOnly">
+                    <ui-button
+                        icon="sync"
+                        size="sm"
+                        variant="ghost"
+                        :loading="refreshing"
+                        :aria-label="__('Refresh')"
+                        v-tooltip="__('Refresh')"
+                        @click="refresh"
+                    />
+                </template>
+            </ui-input>
         </ui-input-group>
         <article
             v-if="shouldShowPreview && hasPreviewData"
@@ -79,7 +91,8 @@ export default {
     mixins: [Fieldtype],
     data() {
         return {
-            embedInfo: {}
+            embedInfo: {},
+            refreshing: false,
         };
     },
     computed: {
@@ -120,14 +133,20 @@ export default {
         },
     },
     methods: {
-        loadEmbedInfo(url) {
-            if (!this.isUrl(url)) return;
+        loadEmbedInfo(url, refresh = false) {
+            if (!this.isUrl(url)) return Promise.resolve();
 
-            this.$axios
-                .post(this.meta.route, { url })
+            return this.$axios
+                .post(this.meta.route, { url, refresh })
                 .then(({ data = {} }) => {
                     this.embedInfo[url] = data
                 })
+        },
+        refresh() {
+            this.refreshing = true;
+            this.loadEmbedInfo(this.value, true).finally(() => {
+                this.refreshing = false;
+            });
         },
         isUrl(url) {
             if (!url) return false;

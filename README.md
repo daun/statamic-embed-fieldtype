@@ -120,6 +120,7 @@ set `cache_store` to a store from `config/cache.php`, e.g. `redis` or `database`
 
 Once the TTL is over, the cached data is still served and refreshed in the background after the
 response. If the refresh fails, e.g. because a video was taken down, the previous data is kept.
+Editors can force a refresh using the refresh button in the field.
 
 ## Commands
 
