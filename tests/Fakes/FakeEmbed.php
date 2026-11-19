@@ -18,6 +18,17 @@ class FakeEmbed extends Embed
 
     public bool $failMulti = false;
 
+    /** @var (\Closure(string): Extractor)|null */
+    public ?\Closure $resolver = null;
+
+    public static function resolving(\Closure $resolver): static
+    {
+        $embed = new static;
+        $embed->resolver = $resolver;
+
+        return $embed;
+    }
+
     public function __construct(Extractor|Throwable ...$results)
     {
         $this->results = $results;
@@ -25,7 +36,8 @@ class FakeEmbed extends Embed
 
     public function get(string $url): Extractor
     {
-        $result = $this->results[$this->calls++];
+        $this->calls++;
+        $result = $this->resolver ? ($this->resolver)($url) : $this->results[$this->calls - 1];
 
         return $result instanceof Throwable ? throw $result : $result;
     }
@@ -38,6 +50,6 @@ class FakeEmbed extends Embed
             throw new RuntimeException('Network error');
         }
 
-        return array_map(fn () => $this->get(''), $urls);
+        return array_map(fn ($url) => $this->get($url), $urls);
     }
 }

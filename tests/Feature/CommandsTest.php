@@ -2,87 +2,42 @@
 
 use Daun\StatamicEmbed\Jobs\WarmEmbedData;
 use Daun\StatamicEmbed\Services\EmbedService;
-use Daun\StatamicEmbed\Services\EmbedUrlFinder;
 use Embed\Embed;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Queue;
-use Statamic\Entries\EntryCollection;
-use Statamic\Facades\Blueprint;
-use Statamic\Facades\Entry;
+use Tests\Concerns\CreatesEmbedContent;
 use Tests\Fakes\FakeEmbed;
 use Tests\Fakes\FakeEmbedExtractor as FakeExtractor;
 
-function fakeContent(array $data): void
+uses(CreatesEmbedContent::class);
+
+function fakeProvider(string $url): FakeExtractor
 {
-    $blueprint = Blueprint::makeFromFields([
-        'video' => ['type' => 'embed'],
-        'link' => ['type' => 'text'],
-        'grid' => ['type' => 'grid', 'fields' => [
-            ['handle' => 'video', 'field' => ['type' => 'embed']],
-        ]],
-        'group' => ['type' => 'group', 'fields' => [
-            ['handle' => 'video', 'field' => ['type' => 'embed']],
-        ]],
-        'replicator' => ['type' => 'replicator', 'sets' => ['main' => ['sets' => [
-            'media' => ['fields' => [['handle' => 'video', 'field' => ['type' => 'embed']]]],
-        ]]]],
-        'bard' => ['type' => 'bard', 'sets' => ['main' => ['sets' => [
-            'media' => ['fields' => [['handle' => 'video', 'field' => ['type' => 'embed']]]],
-        ]]]],
-    ]);
+    $provider = str_contains($url, 'vimeo') ? 'Vimeo' : 'YouTube';
 
-    $item = new class($blueprint, $data)
-    {
-        public function __construct(private $blueprint, private array $data) {}
-
-        public function blueprint()
-        {
-            return $this->blueprint;
-        }
-
-        public function data()
-        {
-            return collect($this->data);
-        }
-    };
-
-    Entry::shouldReceive('all')->andReturn(EntryCollection::make([$item]));
+    return new FakeExtractor($provider, fakeProviderName: $provider);
 }
 
 beforeEach(function () {
     config(['statamic-embed-fieldtype.cache_store' => 'array']);
     Cache::store('array')->flush();
-    // In order of the urls found in the content below
-    $providers = ['YouTube', 'YouTube', 'Vimeo', 'Vimeo', 'YouTube'];
-    app()->instance(Embed::class, new FakeEmbed(...array_map(
-        fn ($provider) => new FakeExtractor($provider, fakeProviderName: $provider),
-        [...$providers, ...$providers],
-    )));
+    app()->instance(Embed::class, FakeEmbed::resolving(fakeProvider(...)));
     app()->forgetInstance(EmbedService::class);
 
-    fakeContent([
+    $this->setUpEmbedContent();
+    $this->createPage([
         'video' => 'https://youtube.com/watch?v=1',
-        'link' => 'https://example.com',
         'grid' => [['video' => 'https://youtu.be/2']],
         'group' => ['video' => 'https://vimeo.com/3'],
-        'replicator' => [['type' => 'media', 'video' => 'https://vimeo.com/4']],
-        'bard' => [
-            ['type' => 'paragraph', 'content' => [['type' => 'text', 'text' => 'https://example.com']]],
+        'blocks' => [['type' => 'media', 'video' => 'https://vimeo.com/4']],
+        'body' => [
             ['type' => 'set', 'attrs' => ['values' => ['type' => 'media', 'video' => 'https://youtube.com/watch?v=1']]],
             ['type' => 'set', 'attrs' => ['values' => ['type' => 'media', 'video' => 'https://youtube.com/watch?v=5']]],
         ],
     ]);
 });
 
-it('finds embed urls in nested fields', function () {
-    expect(app(EmbedUrlFinder::class)->all()->all())->toBe([
-        'https://youtube.com/watch?v=1',
-        'https://youtu.be/2',
-        'https://vimeo.com/3',
-        'https://vimeo.com/4',
-        'https://youtube.com/watch?v=5',
-    ]);
-});
+afterEach(fn () => $this->tearDownEmbedContent());
 
 it('warms embed data', function () {
     $service = app(EmbedService::class);

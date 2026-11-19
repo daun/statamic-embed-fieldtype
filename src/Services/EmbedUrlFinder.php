@@ -12,6 +12,7 @@ use Statamic\Fieldtypes\Bard;
 use Statamic\Fieldtypes\Grid;
 use Statamic\Fieldtypes\Group;
 use Statamic\Fieldtypes\Replicator;
+use Statamic\Taxonomies\LocalizedTerm;
 
 /**
  * Collects the URLs of all embed fields across entries, terms and globals.
@@ -19,20 +20,48 @@ use Statamic\Fieldtypes\Replicator;
 class EmbedUrlFinder
 {
     /**
+     * Unique URLs across all items.
+     *
      * @return Collection<int, string>
      */
-    public function all(): Collection
+    public function all(bool $published = false): Collection
     {
+        return $this->items($published)->flatMap(fn ($item) => $item['urls'])->unique()->values();
+    }
+
+    /**
+     * URLs per localized item, including values inherited from the origin.
+     *
+     * @return Collection<int, array{site: string, urls: string[]}>
+     */
+    public function items(bool $published = false): Collection
+    {
+        return $this->localizations()
+            ->filter(fn ($item) => ! $published || $this->isPublished($item))
+            ->map(fn ($item) => [
+                'site' => $item->locale(),
+                'urls' => iterator_to_array($this->walk($item->blueprint()?->fields(), $item->values()->all()), false),
+            ])
+            ->filter(fn ($item) => $item['urls'])
+            ->values();
+    }
+
+    protected function localizations(): Collection
+    {
+        $terms = Term::all()
+            ->map(fn ($term) => $term instanceof LocalizedTerm ? $term->term() : $term)
+            ->unique(fn ($term) => $term->id())
+            ->flatMap(fn ($term) => $term->localizations()->values());
+
         return collect()
             ->concat(Entry::all())
-            ->concat(Term::all())
-            ->concat(GlobalVariables::all())
-            ->flatMap(fn ($item) => iterator_to_array($this->walk(
-                $item->blueprint()?->fields(),
-                collect($item->data())->all(),
-            ), false))
-            ->unique()
-            ->values();
+            ->concat($terms)
+            ->concat(GlobalVariables::all());
+    }
+
+    protected function isPublished(mixed $item): bool
+    {
+        return ! method_exists($item, 'status') || $item->status() === 'published';
     }
 
     protected function walk(?Fields $fields, mixed $data): \Generator

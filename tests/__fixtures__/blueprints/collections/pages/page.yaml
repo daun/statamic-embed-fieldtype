@@ -1,0 +1,63 @@
+title: Page
+tabs:
+  main:
+    sections:
+      -
+        fields:
+          -
+            handle: title
+            field:
+              type: text
+          -
+            handle: video
+            field:
+              type: embed
+          -
+            handle: link
+            field:
+              type: text
+          -
+            import: media
+            prefix: imported_
+          -
+            handle: grid
+            field:
+              type: grid
+              fields:
+                -
+                  handle: video
+                  field:
+                    type: embed
+          -
+            handle: group
+            field:
+              type: group
+              fields:
+                -
+                  handle: video
+                  field:
+                    type: embed
+          -
+            handle: blocks
+            field:
+              type: replicator
+              sets:
+                main:
+                  sets:
+                    media:
+                      fields:
+                        -
+                          import: media
+          -
+            handle: body
+            field:
+              type: bard
+              sets:
+                main:
+                  sets:
+                    media:
+                      fields:
+                        -
+                          handle: video
+                          field:
+                            type: embed
