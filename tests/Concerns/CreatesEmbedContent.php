@@ -31,7 +31,7 @@ trait CreatesEmbedContent
         $this->deleteFakeStacheDirectory();
     }
 
-    protected function createPage(array $data, bool $published = true, ?string $site = 'en', mixed $origin = null)
+    protected function createPage(array $data, bool $published = true, ?string $site = 'en', mixed $origin = null, bool $quietly = false)
     {
         $entry = Entry::make()
             ->collection('pages')
@@ -43,7 +43,7 @@ trait CreatesEmbedContent
             $entry->origin($origin);
         }
 
-        $entry->save();
+        $quietly ? $entry->saveQuietly() : $entry->save();
 
         return $entry;
     }

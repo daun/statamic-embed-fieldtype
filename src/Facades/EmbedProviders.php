@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static \Illuminate\Support\Collection all()
  * @method static string[] slugs()
  * @method static array build(bool $fetch = true)
+ * @method static void invalidate()
  * @method static void forget()
  *
  * @see \Daun\StatamicEmbed\Support\EmbedProviders

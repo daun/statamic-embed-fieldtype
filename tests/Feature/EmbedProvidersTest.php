@@ -99,7 +99,7 @@ it('fetches uncached urls after the response', function () {
 it('rebuilds stale lists after the response', function () {
     $this->createPage(['video' => 'https://youtube.com/watch?v=1']);
     EmbedProviders::build();
-    $this->createPage(['video' => 'https://open.spotify.com/track/1']);
+    $this->createPage(['video' => 'https://open.spotify.com/track/1'], quietly: true);
 
     $this->travel(Providers::TTL - 1)->seconds();
     expect(EmbedProviders::slugs())->toBe(['youtube']);
@@ -110,6 +110,30 @@ it('rebuilds stale lists after the response', function () {
     expect(EmbedProviders::slugs())->toBe(['youtube']);
     runDeferred();
     expect(EmbedProviders::slugs())->toBe(['spotify', 'youtube']);
+});
+
+it('rebuilds after content is saved', function () {
+    $this->createPage(['video' => 'https://youtube.com/watch?v=1']);
+    EmbedProviders::build();
+
+    $this->createPage(['video' => 'https://open.spotify.com/track/1']);
+    expect(EmbedProviders::slugs())->toBe(['youtube']);
+
+    runDeferred();
+    expect(EmbedProviders::slugs())->toBe(['spotify', 'youtube']);
+});
+
+it('schedules a single rebuild across concurrent requests', function () {
+    $this->createPage(['video' => 'https://youtube.com/watch?v=1']);
+    EmbedProviders::build();
+    EmbedProviders::invalidate();
+
+    EmbedProviders::all();
+    expect(app(DeferredCallbackCollection::class)->count())->toBe(1);
+
+    app()->instance(DeferredCallbackCollection::class, new DeferredCallbackCollection);
+    EmbedProviders::all();
+    expect(app(DeferredCallbackCollection::class)->count())->toBe(0);
 });
 
 it('removes providers no longer in use', function () {

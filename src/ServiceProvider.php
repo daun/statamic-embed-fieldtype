@@ -6,6 +6,7 @@ use Daun\StatamicEmbed\Commands\ClearCommand;
 use Daun\StatamicEmbed\Commands\ProvidersCommand;
 use Daun\StatamicEmbed\Commands\WarmCommand;
 use Daun\StatamicEmbed\Http\Controllers\ProvidersController;
+use Daun\StatamicEmbed\Listeners\InvalidateEmbedProviders;
 use Daun\StatamicEmbed\Services\EmbedService;
 use Daun\StatamicEmbed\Services\EmbedUrlFinder;
 use Daun\StatamicEmbed\Support\EmbedProviders;
@@ -14,6 +15,7 @@ use Embed\Http\FactoryDiscovery;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
+use Statamic\Events;
 use Statamic\Providers\AddonServiceProvider;
 use Statamic\Statamic;
 
@@ -23,6 +25,20 @@ class ServiceProvider extends AddonServiceProvider
         ClearCommand::class,
         ProvidersCommand::class,
         WarmCommand::class,
+    ];
+
+    protected $listen = [
+        Events\EntrySaved::class => [InvalidateEmbedProviders::class],
+        Events\EntryDeleted::class => [InvalidateEmbedProviders::class],
+        Events\EntryScheduleReached::class => [InvalidateEmbedProviders::class],
+        Events\TermSaved::class => [InvalidateEmbedProviders::class],
+        Events\TermDeleted::class => [InvalidateEmbedProviders::class],
+        Events\LocalizedTermSaved::class => [InvalidateEmbedProviders::class],
+        Events\LocalizedTermDeleted::class => [InvalidateEmbedProviders::class],
+        Events\GlobalVariablesSaved::class => [InvalidateEmbedProviders::class],
+        Events\GlobalVariablesDeleted::class => [InvalidateEmbedProviders::class],
+        Events\StacheCleared::class => [InvalidateEmbedProviders::class],
+        Events\StacheWarmed::class => [InvalidateEmbedProviders::class],
     ];
 
     protected $tags = [

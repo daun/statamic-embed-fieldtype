@@ -12,9 +12,9 @@ use function Illuminate\Support\defer;
 class EmbedProviders
 {
     /**
-     * Seconds until the list is rebuilt in the background.
+     * Seconds until the list is rebuilt in the background, in case content changed without events.
      */
-    public const TTL = 300;
+    public const TTL = 3600;
 
     public function __construct(
         protected EmbedService $service,
@@ -32,7 +32,7 @@ class EmbedProviders
         if (! is_array($cached)) {
             $cached = $this->build(fetch: false);
         } elseif (now()->getTimestamp() >= $cached['built_at'] + self::TTL) {
-            defer(fn () => $this->build(), $this->key());
+            $this->rebuildLater();
         }
 
         return collect($cached['providers']);
@@ -65,15 +65,36 @@ class EmbedProviders
         $this->cache->forever($this->key(), $cached);
 
         if (! $fetch && $uncached->isNotEmpty()) {
-            defer(fn () => $this->build(), $this->key());
+            $this->rebuildLater();
         }
 
         return $cached;
     }
 
+    /**
+     * Mark the list as stale to rebuild it after the next request.
+     */
+    public function invalidate(): void
+    {
+        if (is_array($cached = $this->cache->get($this->key()))) {
+            $this->cache->forever($this->key(), [...$cached, 'built_at' => 0]);
+        }
+    }
+
     public function forget(): void
     {
         $this->cache->forget($this->key());
+    }
+
+    protected function rebuildLater(): void
+    {
+        // Let only one of many concurrent requests rebuild the list
+        if ($this->cache->add($this->key().':building', true, 60)) {
+            defer(function () {
+                $this->build();
+                $this->cache->forget($this->key().':building');
+            }, $this->key());
+        }
     }
 
     protected function lookup(Collection $urls): Collection

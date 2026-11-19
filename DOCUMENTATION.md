@@ -168,7 +168,7 @@ across the site. Combine them to build a cookie banner that gates embeds per pro
   </p>
 {{ /if }}
 
-<cookie-consent data-cookies='[{{ embed_providers }}{"id": "{{ slug }}", "label": "{{ name }}"}{{ unless last }},{{ /unless }}{{ /embed_providers }}]'></cookie-consent>
+<cookie-consent data-cookies='[{{ embed_providers }}{"id": "{{ slug }}", "label": {{ name | to_json | sanitize }}}{{ unless last }},{{ /unless }}{{ /embed_providers }}]'></cookie-consent>
 ```
 
 ### JavaScript
