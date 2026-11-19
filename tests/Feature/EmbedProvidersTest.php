@@ -145,3 +145,13 @@ it('provides an antlers tag', function () {
     expect((string) Antlers::parse('{{ embed_providers }}{{ name }}:{{ embeds }} {{ /embed_providers }}'))->toBe('Spotify:1 YouTube:1 ');
     expect((string) Antlers::parse('{{ embed_providers:slugs }}{{ value }} {{ /embed_providers:slugs }}'))->toBe('spotify youtube ');
 });
+
+it('rebuilds and prints providers', function () {
+    $this->createPage(['video' => 'https://youtube.com/watch?v=1']);
+
+    $this->artisan('statamic:embed:providers')->expectsOutputToContain('No embed providers found');
+
+    $this->artisan('statamic:embed:providers --rebuild')
+        ->expectsTable(['Provider', 'Slug', 'Embeds', 'URL'], [['YouTube', 'youtube', 1, null]])
+        ->assertSuccessful();
+});
