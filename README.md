@@ -11,7 +11,6 @@ Fieldtype for embedding and previewing external content.
 - Powered by the [Embed](https://github.com/php-embed/Embed) library and extensible with custom adapters
 - Supports any provider with oEmbed endpoint or Open Graph meta tags
 - Site-wide list of embed providers for cookie banners and consent gates
-- Persistent cache with background refresh and console commands for warming
 
 ## Vs. the Built-In Video Fieldtype
 
@@ -24,6 +23,7 @@ The fieldtype of this addon becomes useful if you need:
 - Other providers and content types like audio players, social media posts, etc
 - Ready-to-render html for embedding the content in an iframe
 - Additional metadata like title, description, thumbnail, etc
+- A list of all used providers for global consent gates
 
 ## Quick Start
 
@@ -31,10 +31,21 @@ The fieldtype of this addon becomes useful if you need:
 2. Add an `embed` field to your blueprint
 3. Render the embed code using `{{ embed:code:html }}` in your views
 
+```html
+<article>
+  {{ if embed:code }}
+    {{ embed:code:html }}
+  {{ elseif embed:image }}
+    <img src="{{ embed:image:url }}">
+  {{ /if }}
+  <a href="{{ embed:url }}">{{ embed:title }}</a>
+  <p>{{ embed:author:name }} · {{ embed:provider:name }}</p>
+</article>
+```
+
 ## Documentation
 
-Read the [documentation](./DOCUMENTATION.md) for a detailed guide to rendering embeds, gating them
-behind consent, caching and extending the addon.
+Read the [documentation](./DOCUMENTATION.md) for a detailed guide.
 
 ## License
 
