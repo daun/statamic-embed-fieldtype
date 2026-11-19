@@ -5,7 +5,6 @@ namespace Daun\StatamicEmbed;
 use Daun\StatamicEmbed\Commands\ClearCommand;
 use Daun\StatamicEmbed\Commands\ProvidersCommand;
 use Daun\StatamicEmbed\Commands\WarmCommand;
-use Daun\StatamicEmbed\Http\Controllers\ProvidersController;
 use Daun\StatamicEmbed\Listeners\InvalidateEmbedProviders;
 use Daun\StatamicEmbed\Services\EmbedService;
 use Daun\StatamicEmbed\Services\EmbedUrlFinder;
@@ -14,10 +13,8 @@ use Embed\Embed;
 use Embed\Http\FactoryDiscovery;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Route;
 use Statamic\Events;
 use Statamic\Providers\AddonServiceProvider;
-use Statamic\Statamic;
 
 class ServiceProvider extends AddonServiceProvider
 {
@@ -70,11 +67,6 @@ class ServiceProvider extends AddonServiceProvider
         ));
 
         $this->allowUnserializingCachedUris();
-    }
-
-    public function bootAddon()
-    {
-        Statamic::pushActionRoutes(fn () => Route::get('embed/providers', ProvidersController::class)->name('embed.providers'));
     }
 
     protected function cacheStore(): Repository

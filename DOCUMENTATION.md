@@ -191,4 +191,4 @@ consent.on('update', loadEmbeds);
 ### Route
 
 On statically cached sites, enable the `providers_route` config option and load the list from the
-route `/!/embed/providers` instead.
+route `/!/statamic-embed-fieldtype/providers` instead.

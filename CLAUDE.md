@@ -39,7 +39,7 @@ pnpm build                 # Build production assets
 - **Tags** (`src/Tags/EmbedProviders.php`) - `{{ embed_providers }}` and `{{ embed_providers:slugs }}`. Avoid keys like `count` in tag output; Antlers loop variables override them
 - **EmbedResource** (`src/Http/Resources/EmbedResource.php`) - Transforms Embed\Extractor to a normalized array with url, title, description, code (iframe), image, provider, and author data
 - **EmbedController** (`src/Http/Controllers/EmbedController.php`) - Single endpoint for fetching embed info via POST to `cp/embed/info`, with optional `refresh`. Accessed by the fieldtype Vue component for live preview
-- **ProvidersController** (`src/Http/Controllers/ProvidersController.php`) - Opt-in public JSON endpoint `GET /!/embed/providers` (config `providers_route`), registered in `ServiceProvider::bootAddon()` via `Statamic::pushActionRoutes()` to avoid the addon slug prefix, for cookie banners on statically cached sites
+- **ProvidersController** (`src/Http/Controllers/ProvidersController.php`) - Opt-in public JSON endpoint `GET /!/statamic-embed-fieldtype/providers` (config `providers_route`), action route in `routes/actions.php`, prefixed with the addon slug, for cookie banners on statically cached sites
 
 ### Caching
 

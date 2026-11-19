@@ -33,7 +33,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | Expose the list of used embed providers as JSON for cookie banners on
-    | statically cached sites: /!/embed/providers
+    | statically cached sites: /!/statamic-embed-fieldtype/providers
     |
     */
 
