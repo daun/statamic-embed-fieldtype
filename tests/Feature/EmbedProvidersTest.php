@@ -120,3 +120,16 @@ it('removes providers no longer in use', function () {
     EmbedProviders::build();
     expect(EmbedProviders::slugs())->toBe([]);
 });
+
+it('returns providers as json', function () {
+    $this->createPage(['video' => 'https://youtube.com/watch?v=1']);
+    EmbedProviders::build();
+
+    $this->get('/!/statamic-embed-fieldtype/providers')
+        ->assertOk()
+        ->assertHeader('Cache-Control', 'max-age=1800, public')
+        ->assertExactJson([
+            'providers' => [['slug' => 'youtube', 'name' => 'YouTube', 'url' => null, 'count' => 1]],
+            'slugs' => ['youtube'],
+        ]);
+});
