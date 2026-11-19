@@ -48,6 +48,8 @@ abstract class TestCase extends OrchestraTestCase
         // Set user repository to default flat file system
         $app['config']->set('statamic.users.repository', 'file');
 
+        $app['config']->set('app.key', 'base64:'.base64_encode(str_repeat('a', 32)));
+
         // Assume pro edition for our tests
         $app['config']->set('statamic.editions.pro', true);
     }

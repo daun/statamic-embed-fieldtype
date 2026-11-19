@@ -1,0 +1,6 @@
+title: Media
+fields:
+  -
+    handle: video
+    field:
+      type: embed
