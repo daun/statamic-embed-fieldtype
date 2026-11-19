@@ -99,6 +99,64 @@ fields:
 +     augment_to_embed_data: false
 ```
 
+## Consent
+
+Embeds from third-party providers usually set cookies, so you might want visitors to consent
+before loading them. The embed data contains the provider slug for gating single embeds, and the
+addon keeps a list of all providers used across the site for cookie banners.
+
+### Gating embeds
+
+Render the embed code into a template and only insert it once the visitor has consented to the
+provider.
+
+```html
+{{ if embed:code }}
+  <div data-embed-provider="{{ embed:provider:slug }}">
+    <template>{{ embed:code:html }}</template>
+    <button>Load content from {{ embed:provider:name }}</button>
+  </div>
+{{ /if }}
+```
+
+### Listing providers
+
+The list contains all providers used in published entries, terms and globals, sorted by the number
+of embeds. It's cached and updated in the background every five minutes.
+
+```json
+[
+  { "slug": "youtube", "name": "YouTube", "url": "https://www.youtube.com/", "embeds": 90 },
+  { "slug": "spotify", "name": "Spotify", "url": "https://spotify.com", "embeds": 37 }
+]
+```
+
+On statically cached sites, fetch the list from the JSON endpoint so pages don't need to be
+invalidated when it changes. Browsers cache the response for 30 minutes.
+
+```js
+const { providers, slugs } = await fetch('/!/statamic-embed-fieldtype/providers').then((r) => r.json());
+```
+
+In templates, use the `embed_providers` tag.
+
+```html
+{{ embed_providers }}
+  <label><input type="checkbox" name="consent[]" value="{{ slug }}"> {{ name }}</label>
+{{ /embed_providers }}
+
+{{ embed_providers:slugs }}{{ value }}{{ /embed_providers:slugs }}
+```
+
+In PHP, use the `EmbedProviders` facade.
+
+```php
+use Daun\StatamicEmbed\Facades\EmbedProviders;
+
+EmbedProviders::all();   // Collection of providers
+EmbedProviders::slugs(); // ['youtube', 'spotify']
+```
+
 ## Configuration
 
 Optionally publish the config file to customize the addon:
@@ -134,6 +192,10 @@ php please embed:warm --force   # refetch fresh data as well
 php please embed:clear
 php please embed:clear https://youtube.com/watch?v=xyz
 php please embed:clear --provider=youtube   # provider name or hostname
+
+# List embed providers used on the site
+php please embed:providers
+php please embed:providers --rebuild
 ```
 
 ## Extending the Embed Library
