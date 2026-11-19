@@ -9,9 +9,6 @@ use Illuminate\Support\Collection;
 
 use function Illuminate\Support\defer;
 
-/**
- * Site-wide list of embed providers used in published content.
- */
 class EmbedProviders
 {
     /**
@@ -49,9 +46,6 @@ class EmbedProviders
         return $this->all()->pluck('slug')->all();
     }
 
-    /**
-     * Rebuild the list, fetching embed data of uncached urls if allowed.
-     */
     public function build(bool $fetch = true): array
     {
         $urls = $this->finder->items(published: true)->flatMap(fn ($item) => $item['urls']);

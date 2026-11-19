@@ -20,8 +20,6 @@ use Statamic\Taxonomies\LocalizedTerm;
 class EmbedUrlFinder
 {
     /**
-     * Unique URLs across all items.
-     *
      * @return Collection<int, string>
      */
     public function all(bool $published = false): Collection
@@ -42,7 +40,7 @@ class EmbedUrlFinder
                 'site' => (string) $item->locale(),
                 'urls' => iterator_to_array($this->walk($item->blueprint()?->fields(), $item->values()->all()), false),
             ])
-            ->filter(fn ($item) => count($item['urls']) > 0)
+            ->filter(fn ($item) => $item['urls'] !== [])
             ->values();
     }
 

@@ -137,6 +137,43 @@ EmbedProviders::all();   // Collection of providers
 EmbedProviders::slugs(); // ['youtube', 'spotify']
 ```
 
+### Example: Cookie Banner
+
+This example uses the [@grrr/cookie-consent](https://github.com/grrr-amsterdam/cookie-consent)
+custom element, with each provider as a separate cookie type. Embeds are rendered into templates
+and only inserted once their provider was accepted.
+
+```html
+{{ if embed:code }}
+  <template data-embed-provider="{{ embed:provider:slug }}">{{ embed:code:html }}</template>
+  <p data-cookie-consent-rejected="{{ embed:provider:slug }}">
+    Allow cookies from {{ embed:provider:name }} to view this content.
+  </p>
+{{ /if }}
+```
+
+```js
+import CookieConsent from '@grrr/cookie-consent';
+
+const { providers } = await fetch('/!/statamic-embed-fieldtype/providers').then((r) => r.json());
+
+// The element reads its cookie types on creation, so set them before defining it
+const consent = document.createElement('cookie-consent');
+consent.dataset.cookies = JSON.stringify(providers.map(({ slug, name }) => ({ id: slug, label: name })));
+document.body.append(consent);
+customElements.define('cookie-consent', CookieConsent);
+
+const loadEmbeds = (preferences) => preferences
+  .filter(({ accepted }) => accepted)
+  .forEach(({ id }) => {
+    document.querySelectorAll(`template[data-embed-provider="${id}"]`)
+      .forEach((template) => template.replaceWith(template.content));
+  });
+
+loadEmbeds(consent.preferences.getAll());
+consent.on('update', loadEmbeds);
+```
+
 ## Configuration
 
 Optionally publish the config file to customize the addon:

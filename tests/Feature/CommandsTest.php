@@ -11,17 +11,14 @@ use Tests\Fakes\FakeEmbedExtractor as FakeExtractor;
 
 uses(CreatesEmbedContent::class);
 
-function fakeProvider(string $url): FakeExtractor
-{
-    $provider = str_contains($url, 'vimeo') ? 'Vimeo' : 'YouTube';
-
-    return new FakeExtractor($provider, fakeProviderName: $provider);
-}
-
 beforeEach(function () {
     config(['statamic-embed-fieldtype.cache_store' => 'array']);
     Cache::store('array')->flush();
-    app()->instance(Embed::class, FakeEmbed::resolving(fakeProvider(...)));
+    app()->instance(Embed::class, FakeEmbed::resolving(function ($url) {
+        $provider = str_contains($url, 'vimeo') ? 'Vimeo' : 'YouTube';
+
+        return new FakeExtractor($provider, fakeProviderName: $provider);
+    }));
     app()->forgetInstance(EmbedService::class);
 
     $this->setUpEmbedContent();
