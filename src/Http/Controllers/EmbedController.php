@@ -13,8 +13,9 @@ class EmbedController
 
     public function info(Request $request)
     {
-        $url = $request->input('url');
-
-        return $this->service->info($url);
+        return $this->service->info(
+            $request->input('url'),
+            refresh: $request->boolean('refresh'),
+        );
     }
 }
