@@ -32,17 +32,17 @@ class EmbedUrlFinder
     /**
      * URLs per localized item, including values inherited from the origin.
      *
-     * @return Collection<int, array{site: string, urls: string[]}>
+     * @return Collection<int, array{site: string, urls: non-empty-list<string>}>
      */
     public function items(bool $published = false): Collection
     {
         return $this->localizations()
             ->filter(fn ($item) => ! $published || $this->isPublished($item))
             ->map(fn ($item) => [
-                'site' => $item->locale(),
+                'site' => (string) $item->locale(),
                 'urls' => iterator_to_array($this->walk($item->blueprint()?->fields(), $item->values()->all()), false),
             ])
-            ->filter(fn ($item) => $item['urls'])
+            ->filter(fn ($item) => count($item['urls']) > 0)
             ->values();
     }
 
@@ -64,6 +64,9 @@ class EmbedUrlFinder
         return ! method_exists($item, 'status') || $item->status() === 'published';
     }
 
+    /**
+     * @return \Generator<int, string>
+     */
     protected function walk(?Fields $fields, mixed $data): \Generator
     {
         if (! $fields || ! is_array($data)) {

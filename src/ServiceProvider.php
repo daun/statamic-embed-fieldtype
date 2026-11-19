@@ -5,6 +5,8 @@ namespace Daun\StatamicEmbed;
 use Daun\StatamicEmbed\Commands\ClearCommand;
 use Daun\StatamicEmbed\Commands\WarmCommand;
 use Daun\StatamicEmbed\Services\EmbedService;
+use Daun\StatamicEmbed\Services\EmbedUrlFinder;
+use Daun\StatamicEmbed\Support\EmbedProviders;
 use Embed\Embed;
 use Embed\Http\FactoryDiscovery;
 use Illuminate\Contracts\Cache\Repository;
@@ -34,6 +36,12 @@ class ServiceProvider extends AddonServiceProvider
             $app->make(Embed::class),
             $this->cacheStore(),
             config('statamic-embed-fieldtype.cache_ttl', 60 * 60 * 24 * 30),
+        ));
+
+        $this->app->singleton(EmbedProviders::class, fn ($app) => new EmbedProviders(
+            $app->make(EmbedService::class),
+            $app->make(EmbedUrlFinder::class),
+            $this->cacheStore(),
         ));
 
         $this->allowUnserializingCachedUris();
